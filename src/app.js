@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 const fs = require("fs");
 const path = require("path");
+const { exec } = require("child_process");
 
 const port = 8080;
 
@@ -33,7 +34,7 @@ app.post("/submission", (req, res) => {
     const { title, language, difficulty, code } = req.body;
 
     // Create folders so ".." is tells that one folder up and create 
-    const solutionPath = path.join(__dirname,".." , "solutions");
+    const solutionPath = path.join(__dirname, "..", "solutions");
     const languagePath = path.join(solutionPath, language);
     const difficultyPath = path.join(languagePath, difficulty);
 
@@ -65,11 +66,39 @@ app.post("/submission", (req, res) => {
 
     // Write code
     fs.writeFileSync(filePath, code);
+ 
+    // run commands 
+    exec("git add .",{cwd: path.join(__dirname,"..")}
+, (error , stdout, stderr) =>{
+    if(error){
+        return res.json(
+            {
+                "Success": false,
+                "message": "git add fail"
+            }
+        )
+    }
+    console.log("add successfully")
+
+});
 
     return res.json({
         success: true,
         message: "Submission saved successfully."
     });
+});
+
+
+
+
+
+
+
+app.get("/git", (req, res) => {
+    exec("git status", (error, stdout, stderr) => {
+        console.log(stdout);
+    });
+
 });
 
 app.listen(port, () => {
