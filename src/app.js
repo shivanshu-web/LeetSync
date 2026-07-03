@@ -12,7 +12,72 @@ app.get("/", (req, res) => {
     res.send("Root Route");
 });
 
-app.post("/submission", (req, res) => {
+
+function gitAdd() {
+    return new Promise((resolve, reject) => {
+        exec("git add .", { cwd: path.join(__dirname, "..") }
+            , (error, stdout, stderr) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve(stdout);
+                }
+            });
+
+    });
+}
+
+function gitCommit(message) {
+    return new Promise((resolve, reject) => {
+
+        exec(`git commit -m "${message}"`, { cwd: path.join(__dirname, "..") },
+            (error, stdout, stderr) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve(stdout);
+                }
+
+            });
+
+    });
+}
+
+function gitPush() {
+    return new Promise((resolve, reject) => {
+
+        exec("git push origin main", { cwd: path.join(__dirname, "..") },
+            (error, stdout, stderr) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve(stdout);
+                }
+
+            });
+
+    });
+
+
+}
+
+async function gitAutomation(messege) {
+    try {
+        await gitAdd();
+        await gitCommit(messege);
+        await gitPush();
+        console.log("git Automation is complete")
+    } catch (err) {
+        if (err) {
+            throw err;
+        }
+    }
+}
+
+
+
+
+app.post("/submission", async (req, res) => {
 
     // Validation
     if (!req.body.title) {
@@ -66,26 +131,26 @@ app.post("/submission", (req, res) => {
 
     // Write code
     fs.writeFileSync(filePath, code);
- 
-    // run commands 
-    exec("git add .",{cwd: path.join(__dirname,"..")}
-, (error , stdout, stderr) =>{
-    if(error){
-        return res.json(
-            {
-                "Success": false,
-                "message": "git add fail"
-            }
-        )
-    }
-    console.log("add successfully")
 
-});
+    
+
+
+    try {
+    await gitAutomation(`add${title}.${language}`);
 
     return res.json({
         success: true,
         message: "Submission saved successfully."
     });
+
+} catch (error) {
+
+    return res.status(500).json({
+        success: false,
+        message: error.message
+    });
+
+}
 });
 
 
