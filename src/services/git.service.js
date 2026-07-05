@@ -1,7 +1,7 @@
 const {exec} = require("child_process");
 const path = require("path");
 
-function rungit(cammand){
+function runGit(cammand){
     return new Promise((resolve,reject)=>{
         exec(cammand,{cwd:path.join(__dirname,"..","..")},
         (error,stdout,stderr)=>{

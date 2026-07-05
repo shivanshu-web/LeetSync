@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
-const { submitSolution } = require("../controllers/submission.controller");
+const { submitSolution } = require("../controllers/submission.controler");
 const wrapAsync = require("../utils/wrapAsync");
 
 router.post("/submission", wrapAsync(submitSolution));
