@@ -17,6 +17,15 @@ function createSolutionFile({ title, language, difficulty, code }) {
     else if (language === "JavaScript") ext = ".js";
 
     const filePath = path.join(diffPath, `${title}${ext}`);
+    // for check duplication of file 
+    const fileExist = fs.existsSync(filePath);
+    if(fileExist){
+        return {
+            success:false,
+            message:"Already submitted"
+            
+        }
+    }
 
     fs.writeFileSync(filePath, code);
 

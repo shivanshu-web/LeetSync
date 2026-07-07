@@ -4,18 +4,12 @@ const app = express();
 app.use(express.json());
 
 const submissionRoutes = require("./routes/submission.routes");
+const ErrorMiddleware = require("./middleware/ErrorMiddleware.js");
 
 app.use("/", submissionRoutes);
 
 // error middleware
-app.use((err, req, res, next) => {
-    console.error(err);
-
-    res.status(500).json({
-        success: false,
-        message: err.message
-    });
-});
+app.use(ErrorMiddleware);
 
 app.listen(8080, () => {
     console.log("Server running on 8080");
